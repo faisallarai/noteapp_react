@@ -5,16 +5,25 @@ import Header from './components/Header'
 import Button from './components/Button'
 import Form from './components/Form'
 import noteService from './services/notes'
+import Notification from './components/Notification'
+import Footer from './components/Footer'
 
 const App = () => {
 
   const [notes, setNotes] = useState([])
   const [note, setNote] = useState('a new note')
   const [showAll, setShowAll] = useState(true)
+  const [messages, setMessages] = useState([])
 
   useEffect(() =>{
     noteService.getAll().then(returnedNotes => {
       setNotes(returnedNotes)
+    }).catch(errorr => {
+      const newMessage = {
+        error: errorr.message,
+        success: ''
+      }
+      setMessages(messages.concat(newMessage))
     })
   },[])
 
@@ -45,19 +54,37 @@ const App = () => {
     }
 
     noteService.create(newNote).then(returnedNote => {
+      
       setNotes(notes.concat(returnedNote))
       setNote('')
+      const newMessage = {
+        error: '',
+        success: `${newNote.title} has been added to the list`
+      }
+      setMessages(messages.concat(newMessage))
+      setTimeout(() => {
+        setMessages([])
+      },3000)
+    }).catch(errorr => {
+      const newMessage = {
+        error: errorr.message,
+        success: ''
+      }
+      setMessages(messages.concat(newMessage))
+      setTimeout(() => {
+        setMessages([])
+      },3000)
     })
   }
 
   return(
     <div>
-      <Header title={'Filter'} />
+      <Header title={'Notes'} />
+      <Notification messages={messages} />
       <Button handleClick={handleClick} text="showAll" />
-      <Header title={'Submit Note'} />
-      <Form handleSubmit={handleSubmit} handleNoteChange={handleNoteChange} note={note} />
-      <Header title={'Note Table'} />
       <Notes notes={notes} showAll={showAll} setNotes={setNotes} />
+      <Form handleSubmit={handleSubmit} handleNoteChange={handleNoteChange} note={note} />
+      <Footer />
     </div>
   )
 }

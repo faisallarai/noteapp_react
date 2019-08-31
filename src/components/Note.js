@@ -4,7 +4,7 @@ import Button from './Button'
 const Note = ({note, toggleImportant, deleteNote}) => {
 
     return(
-        <tr>
+        <tr className='note'>
             <td>{note.id}</td>
             <td>{note.title}</td>
             <td>{note.important ? 'important' : 'not important'}</td>
